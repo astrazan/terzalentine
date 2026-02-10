@@ -143,4 +143,98 @@
   </div>
 
   <script>
-    const zone = docume
+    const zone = document.getElementById("zone");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const result = document.getElementById("result");
+    const hint = document.getElementById("hint");
+
+    const confettiCanvas = document.getElementById("confettiCanvas");
+    const confettiInstance = confetti.create(confettiCanvas, { resize: true });
+
+    const videoOverlay = document.getElementById("videoOverlay");
+    const finalVideo = document.getElementById("finalVideo");
+
+    /* CONFETTI */
+    function fullScreenConfetti() {
+      const end = Date.now() + 1800;
+      (function frame() {
+        confettiInstance({
+          particleCount: 12,
+          spread: 100,
+          startVelocity: 45,
+          origin: { x: Math.random(), y: Math.random() * 0.4 }
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      })();
+    }
+
+    /* YES BUTTON GROWS */
+    let yesScale = 1;
+    function growYes() {
+      yesScale = Math.min(2.2, yesScale + 0.12);
+      yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
+    }
+
+    /* NO BUTTON RUNS AWAY */
+    function clamp(n, min, max) {
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function moveNo(px, py) {
+      const z = zone.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+
+      let dx = (b.left + b.width / 2) - px;
+      let dy = (b.top + b.height / 2) - py;
+      let mag = Math.hypot(dx, dy) || 1;
+      dx /= mag;
+      dy /= mag;
+
+      let newLeft = (b.left - z.left) + dx * 140;
+      let newTop  = (b.top - z.top) + dy * 140;
+
+      newLeft = clamp(newLeft, 0, z.width - b.width);
+      newTop  = clamp(newTop, 0, z.height - b.height);
+
+      noBtn.style.left = newLeft + "px";
+      noBtn.style.top = newTop + "px";
+      noBtn.style.transform = "none";
+
+      growYes();
+    }
+
+    zone.addEventListener("pointermove", e => {
+      const b = noBtn.getBoundingClientRect();
+      const d = Math.hypot(
+        (b.left + b.width / 2) - e.clientX,
+        (b.top + b.height / 2) - e.clientY
+      );
+      if (d < 140) moveNo(e.clientX, e.clientY);
+    });
+
+    noBtn.addEventListener("click", e => e.preventDefault());
+
+    /* YES CLICK */
+    yesBtn.addEventListener("click", () => {
+      zone.style.display = "none";
+      hint.style.display = "none";
+      result.style.display = "block";
+
+      fullScreenConfetti();
+
+      setTimeout(() => {
+        videoOverlay.style.display = "flex";
+        finalVideo.currentTime = 0;
+        finalVideo.play();
+
+        if (finalVideo.requestFullscreen) {
+          finalVideo.requestFullscreen();
+        } else if (finalVideo.webkitRequestFullscreen) {
+          finalVideo.webkitRequestFullscreen();
+        }
+      }, 2200);
+    });
+  </script>
+</body>
+</html>
