@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Will you be my Valentine?</title>
 
-  <!-- Confetti library -->
+  <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
@@ -30,12 +30,9 @@
       padding: 16px;
     }
 
-    /* CONFETTI */
     #confettiCanvas {
       position: fixed;
       inset: 0;
-      width: 100vw;
-      height: 100vh;
       pointer-events: none;
       z-index: 9999;
     }
@@ -50,12 +47,6 @@
       box-shadow: 0 18px 60px rgba(0,0,0,.15);
     }
 
-    .art {
-      width: min(260px, 80vw);
-      margin: 0 auto 10px;
-      display: block;
-    }
-
     h1 {
       font-size: clamp(26px, 4vw, 44px);
       margin: 12px 0 18px;
@@ -66,6 +57,7 @@
       width: min(520px, 92%);
       height: 150px;
       margin: 0 auto;
+      touch-action: none;
     }
 
     button {
@@ -78,17 +70,23 @@
       border-radius: 999px;
       border: none;
       cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.14);
+      user-select: none;
     }
 
     #yesBtn {
       left: 18%;
       background: var(--yes);
       color: #fff;
+      transition: transform .15s ease, background .15s ease;
     }
+
+    #yesBtn:hover { background: var(--yesHover); }
 
     #noBtn {
       left: 62%;
       background: #e5e7eb;
+      color: #111827;
     }
 
     .hint {
@@ -132,7 +130,7 @@
       <button id="noBtn">No</button>
     </section>
 
-    <div class="hint" id="hint">“No” is not an option.</div>
+    <div class="hint" id="hint">“No” is not an option!</div>
 
     <section class="result" id="result">
       <h2>YAY! 🎉</h2>
@@ -145,52 +143,4 @@
   </div>
 
   <script>
-    const zone = document.getElementById("zone");
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const result = document.getElementById("result");
-    const hint = document.getElementById("hint");
-
-    const confettiCanvas = document.getElementById("confettiCanvas");
-    const confettiInstance = confetti.create(confettiCanvas, { resize: true });
-
-    const videoOverlay = document.getElementById("videoOverlay");
-    const finalVideo = document.getElementById("finalVideo");
-
-    function fullScreenConfetti() {
-      const end = Date.now() + 1800;
-      (function frame() {
-        confettiInstance({
-          particleCount: 10,
-          spread: 100,
-          origin: { x: Math.random(), y: Math.random() * 0.4 }
-        });
-        if (Date.now() < end) requestAnimationFrame(frame);
-      })();
-    }
-
-    function showVideo() {
-      videoOverlay.style.display = "flex";
-      finalVideo.currentTime = 0;
-      finalVideo.play();
-
-      if (finalVideo.requestFullscreen) {
-        finalVideo.requestFullscreen();
-      } else if (finalVideo.webkitRequestFullscreen) {
-        finalVideo.webkitRequestFullscreen();
-      }
-    }
-
-    yesBtn.addEventListener("click", () => {
-      zone.style.display = "none";
-      hint.style.display = "none";
-      result.style.display = "block";
-      fullScreenConfetti();
-      setTimeout(showVideo, 2200);
-    });
-
-    noBtn.addEventListener("click", e => e.preventDefault());
-  </script>
-</body>
-</html>
-
+    const zone = docume
